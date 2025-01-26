@@ -1,0 +1,5 @@
+# Ignore the VS Code workspace file
+myFirstMLDeployment.code-workspace
+
+# Ignore the environment directory
+env/
