@@ -18,3 +18,4 @@ build/
 
 /artifacts
 /mlruns
+/logs
