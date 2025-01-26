@@ -9,3 +9,12 @@ env/
 
 # Ignore the build directory
 build/
+
+# Ignore the .vscode directory
+.vscode/
+
+# Ignore the .pytest_cache directory
+.pytest_cache/
+
+/artifacts
+/mlruns

@@ -5,6 +5,8 @@ from mlProject.entity.config_entity import (DataIngestionConfig,
                                             DataTransformationConfig,
                                             ModelTrainerConfig,
                                             ModelEvaluationConfig)
+import dagshub
+import mlflow
 
 class ConfigurationManager:
     def __init__(
@@ -87,24 +89,37 @@ class ConfigurationManager:
 
         return model_trainer_config
     
-
-
     def get_model_evaluation_config(self) -> ModelEvaluationConfig:
+        # Fetch configurations and parameters
         config = self.config.model_evaluation
         params = self.params.ElasticNet
-        schema =  self.schema.TARGET_COLUMN
+        schema = self.schema.TARGET_COLUMN
 
+        # Create necessary directories
         create_directories([config.root_dir])
 
+        # Initialize DagsHub for MLflow logging
+        dagshub_logger = dagshub.init(
+            repo_owner='tmbharathiraja',  # Replace with your repo owner
+            repo_name='myFirstMLDeployment',  # Replace with your repo name
+            mlflow=True
+        )
+
+        # Start MLflow logging
+        with mlflow.start_run():
+            mlflow.log_param('elasticnet_params', params)
+            mlflow.log_param('target_column', schema.name)
+            mlflow.log_metric('initialization', 1)
+
+        # Define and return the ModelEvaluationConfig
         model_evaluation_config = ModelEvaluationConfig(
             root_dir=config.root_dir,
             test_data_path=config.test_data_path,
-            model_path = config.model_path,
+            model_path=config.model_path,
             all_params=params,
-            metric_file_name = config.metric_file_name,
-            target_column = schema.name,
-            # mlflow_uri="https://dagshub.com/someshnaman/End_to_end_MLOPS_project.mlflow",
-            mlflow_uri="https://dagshub.com/ashokj0922/End_to_end_mlops.mlflow",
+            metric_file_name=config.metric_file_name,
+            target_column=schema.name,
+            mlflow_uri="https://dagshub.com/tmbharathiraja/myFirstMLDeployment.mlflow",
         )
-
+        
         return model_evaluation_config
